@@ -1,62 +1,28 @@
 package model;
 
-import service.TaskStatus;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<SubTask> subTasks;
+    private final List<Integer> subTaskIds;
 
     public Epic(String name, String description) {
         super(name, description);
-        subTasks = new ArrayList<>();
+        subTaskIds = new ArrayList<>();
     }
 
-    public List<SubTask> getSubTasks() {
-        return subTasks;
+    public List<Integer> getSubTaskIds() {
+        return subTaskIds;
     }
 
-    public void addSubTask(SubTask subTask) {
-        subTasks.add(subTask);
+    public void addSubTaskById(int id) {
+        subTaskIds.add(id);
     }
 
-    public void removeSubTask(SubTask subTask) {
-        subTasks.remove(subTask);
+    public void removeSubTaskById(int id) {
+        subTaskIds.remove(id);
     }
 
-    public void calculateEpicStatus() {
-        boolean allNew = true;
-        boolean allDone = true;
-
-        for (SubTask subTask : subTasks) {
-            switch (subTask.getStatus()) {
-                case IN_PROGRESS:
-                    allNew = false;
-                    allDone = false;
-                    break;
-                case NEW:
-                    allDone = false;
-                    break;
-                case DONE:
-                    allNew = false;
-                    break;
-            }
-
-            if (!allNew && !allDone) {
-                break;
-            }
-        }
-
-        if (allNew || subTasks.isEmpty()) {
-            this.setStatus(TaskStatus.NEW);
-        } else if (allDone) {
-            this.setStatus(TaskStatus.DONE);
-        } else {
-            this.setStatus(TaskStatus.IN_PROGRESS);
-        }
-
-    }
 
     @Override
     public String toString() {
@@ -65,7 +31,7 @@ public class Epic extends Task {
                 ", name='" + getName() + '\'' +
                 ", status='" + getStatus() + '\'' +
                 ", description='" + getDescription() + '\'' +
-                ", subTasks=" + subTasks +
+                ", subTaskIds=" + subTaskIds +
                 "}";
     }
 }
