@@ -1,5 +1,7 @@
 package model;
 
+import service.TaskStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,11 @@ public class Epic extends Task {
     public Epic(String name, String description) {
         super(name, description);
         subTaskIds = new ArrayList<>();
+    }
+
+    public Epic(int id, String name, TaskStatus status, String description, List<Integer> subTaskIds) {
+        super(id, name, status, description);
+        this.subTaskIds = subTaskIds;
     }
 
     public List<Integer> getSubTaskIds() {
@@ -29,7 +36,7 @@ public class Epic extends Task {
         return "Epic{" +
                 "id=" + getId() +
                 ", name='" + getName() + '\'' +
-                ", status='" + getStatus() + '\'' +
+                ", status='" + getStatus().getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", subTaskIds=" + subTaskIds +
                 "}";

@@ -1,7 +1,17 @@
 package service;
 
 public enum TaskStatus {
-    NEW,
-    IN_PROGRESS,
-    DONE
+    NEW("Новый"),
+    IN_PROGRESS("В процессе"),
+    DONE("Завершен");
+
+    private final String nameStatus;
+
+    TaskStatus(String nameStatus) {
+        this.nameStatus = nameStatus;
+    }
+
+    public String getName(){
+        return nameStatus;
+    }
 }
