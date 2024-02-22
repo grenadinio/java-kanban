@@ -1,6 +1,8 @@
 package service;
 
-import model.*;
+import model.Epic;
+import model.SubTask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -190,7 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
         boolean allDone = true;
 
         for (Integer subTaskId : epic.getSubTaskIds()) {
-            SubTask subTask = getSubTaskById(subTaskId);
+            SubTask subTask = subTasks.get(subTaskId);
             switch (subTask.getStatus()) {
                 case IN_PROGRESS:
                     allNew = false;
@@ -209,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        if (allNew || subTasks.isEmpty()) {
+        if (allNew || epic.getSubTaskIds().isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
         } else if (allDone) {
             epic.setStatus(TaskStatus.DONE);
