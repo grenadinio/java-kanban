@@ -107,7 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask createSubTask(SubTask subTask) {
-        if(!epics.containsKey(subTask.getEpicId())){
+        if (!epics.containsKey(subTask.getEpicId())) {
             return null;
         }
 
@@ -121,7 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        if (!tasks.containsKey(task.getId())){
+        if (!tasks.containsKey(task.getId())) {
             return;
         }
         tasks.put(task.getId(), task);
@@ -129,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if (!epics.containsKey(epic.getId())){
+        if (!epics.containsKey(epic.getId())) {
             return;
         }
         Epic updatedEpic = epics.get(epic.getId());
@@ -140,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        if (!subTasks.containsKey(subTask.getId())){
+        if (!subTasks.containsKey(subTask.getId())) {
             return;
         }
         Epic epic = epics.get(subTask.getEpicId());
@@ -180,7 +180,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getEpicSubTasks(Epic epic) {
         List<SubTask> subTaskList = new ArrayList<>();
-        for (int id : epic.getSubTaskIds()){
+        for (int id : epic.getSubTaskIds()) {
             subTaskList.add(subTasks.get(id));
         }
         return subTaskList;
