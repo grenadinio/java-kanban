@@ -179,61 +179,70 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("должен удалять первый элемент списка и добавлять новый в конец после достижения 10 элементов в листе и добавления 11")
-    void shouldDeleteFirstElementAndAddNewToLastPositionAfterReachingLengthOf10() {
-        Epic epicOne = taskManager.createEpic(new Epic("Test epic1", "Test description1"));
-        Epic epicTwo = taskManager.createEpic(new Epic("Test epic2", "Test description2"));
-        Epic epicThree = taskManager.createEpic(new Epic("Test epic3", "Test description3"));
-        Epic epicFour = taskManager.createEpic(new Epic("Test epic4", "Test description4"));
-        SubTask subTaskOne = taskManager.createSubTask(new SubTask(epicOne.getId(), "Подзадача1", "Описание1"));
-        SubTask subTaskTwo = taskManager.createSubTask(new SubTask(epicTwo.getId(), "Подзадача2", "Описание2"));
-        SubTask subTaskThree = taskManager.createSubTask(new SubTask(epicThree.getId(), "Подзадача3", "Описание3"));
-        SubTask subTaskFour = taskManager.createSubTask(new SubTask(epicFour.getId(), "Подзадача4", "Описание4"));
-        Task taskOne = taskManager.createTask(new Task("Задача1", "Описание1"));
-        Task taskTwo = taskManager.createTask(new Task("Задача2", "Описание2"));
-        Task taskThree = taskManager.createTask(new Task("Задача3", "Описание3"));
-
-        taskManager.getEpicById(epicOne.getId());
-        taskManager.getEpicById(epicTwo.getId());
-        taskManager.getEpicById(epicThree.getId());
-        taskManager.getEpicById(epicFour.getId());
-
-        taskManager.getSubTaskById(subTaskOne.getId());
-        taskManager.getSubTaskById(subTaskTwo.getId());
-        taskManager.getSubTaskById(subTaskThree.getId());
-        taskManager.getSubTaskById(subTaskFour.getId());
-
-        taskManager.getTaskById(taskOne.getId());
-        taskManager.getTaskById(taskTwo.getId());
-        taskManager.getTaskById(taskThree.getId());
-
-        assertEquals(10, taskManager.getHistory().size(), "Неверная длинна истории");
-        assertEquals(1, taskManager.getHistory().getFirst().getId(), "Неверный ID первого элемента в истории");
-        assertEquals(10, taskManager.getHistory().getLast().getId(), "Неверный ID последнего элемента в истории");
-    }
-
-    @Test
-    @DisplayName("должен при добавлении новой задачи в историю, сохранять предыдущую версию задачи в себе, если он до этого была")
-    void shouldSavePreviousVersionOfTaskAfterEdit() {
-        Task taskFour = taskManager.createTask(new Task("Задача4", "Описание4"));
-        taskManager.getTaskById(taskFour.getId());
-
-        Task editTask = new Task(taskFour.getId(), taskFour.getName(), taskFour.getStatus(), taskFour.getDescription());
-
-        editTask.setName("Изменённое имя");
-        taskManager.updateTask(editTask);
-
-        taskManager.getTaskById(editTask.getId());
-
-        assertEquals("Задача4", taskManager.getHistory().get(0).getName(), "Имя задания не совпадает");
-        assertEquals("Изменённое имя", taskManager.getHistory().get(1).getName(), "Имя задания не совпадает");
-    }
-
-    @Test
     @DisplayName("должен создать задачу с сгенерированным ID, а не с указанным")
     void shouldCreateTaskWithGeneratedID() {
         Task task = taskManager.createTask(new Task(999, "Задача4", TaskStatus.DONE, "Описание4"));
 
         assertEquals(0, task.getId(), "ID не совпадает");
+    }
+
+    @Test
+    @DisplayName("при удалении эпика, должна удаляться история просмотра его подзадач и его самого")
+    void shouldDeleteEpicAndSubTasksFromHistoryOnEpicDeletion() {
+        Epic epic = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        Epic epic2 = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
+
+        taskManager.getSubTaskById(subTask.getId());
+        taskManager.getEpicById(epic.getId());
+        taskManager.getEpicById(epic2.getId());
+
+        taskManager.removeEpicById(epic.getId());
+
+        assertEquals(1, taskManager.getHistory().size(), "Неверная длинна истории после удаления");
+
+        taskManager.deleteAllEpics();
+
+        assertEquals(0, taskManager.getHistory().size(), "Неверная длинна истории после полного удаления");
+    }
+
+    @Test
+    @DisplayName("при удалении задачи, должна удаляться история её просмотра")
+    void shouldDeleteTaskFromHistoryOnTaskDeletion() {
+        for (int i = 0; i <= 14; i++) {
+            taskManager.createTask(new Task("Task " + i, "Description " + i));
+            taskManager.getTaskById(i);
+        }
+        taskManager.removeTaskById(0);
+        taskManager.removeTaskById(4);
+
+        assertEquals(13, taskManager.getHistory().size(), "Неверная длинна истории после удаления");
+        assertEquals(1, taskManager.getHistory().getFirst().getId(), "Неверный ID первой задачи");
+
+        taskManager.deleteAllTasks();
+
+        assertEquals(0, taskManager.getHistory().size(), "Неверная длинна истории после удаления");
+    }
+
+    @Test
+    @DisplayName("при удалении подзадачи, должна удаляться история её просмотра")
+    void shouldDeleteSubTaskFromHistoryOnSubTaskDeletion() {
+        Epic epic = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача1", "Описание1"));
+        SubTask subTask2 = taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача2", "Описание2"));
+        SubTask subTask3 = taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача3", "Описание3"));
+
+        taskManager.getSubTaskById(subTask3.getId());
+        taskManager.getSubTaskById(subTask2.getId());
+        taskManager.getSubTaskById(subTask.getId());
+
+        taskManager.removeSubTaskById(subTask.getId());
+
+        assertEquals(2, taskManager.getHistory().size(), "Неверная длинна истории после удаления");
+        assertEquals(subTask2.getId(), taskManager.getHistory().getLast().getId(), "Неверный ID последней задачи");
+
+        taskManager.deleteAllSubTasks(epic);
+
+        assertEquals(0, taskManager.getHistory().size(), "Неверная длинна истории после полного удаления");
     }
 }

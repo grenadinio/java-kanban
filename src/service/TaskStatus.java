@@ -11,7 +11,7 @@ public enum TaskStatus {
         this.nameStatus = nameStatus;
     }
 
-    public String getName(){
+    public String getName() {
         return nameStatus;
     }
 }

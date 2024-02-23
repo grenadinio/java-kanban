@@ -1,6 +1,8 @@
 package service;
 
-import model.*;
+import model.Epic;
+import model.SubTask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,18 +44,30 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        for (int id : tasks.keySet()) {
+            historyManager.remove(id);
+        }
         tasks.clear();
     }
 
     @Override
     public void deleteAllEpics() {
+        for (int id : subTasks.keySet()) {
+            historyManager.remove(id);
+        }
+        for (int id : epics.keySet()) {
+            historyManager.remove(id);
+        }
         subTasks.clear();
         epics.clear();
     }
 
     @Override
     public void deleteAllSubTasks(Epic epic) {
-        for (int id : epic.getSubTaskIds()) {
+        List<Integer> subTaskIdsCopy = new ArrayList<>(epic.getSubTaskIds());
+        for (Integer id : subTaskIdsCopy) {
+            epic.removeSubTaskById(id);
+            historyManager.remove(id);
             subTasks.remove(id);
         }
         calculateEpicStatus(epic);
@@ -93,7 +107,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask createSubTask(SubTask subTask) {
-        if(!epics.containsKey(subTask.getEpicId())){
+        if (!epics.containsKey(subTask.getEpicId())) {
             return null;
         }
 
@@ -107,7 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        if (!tasks.containsKey(task.getId())){
+        if (!tasks.containsKey(task.getId())) {
             return;
         }
         tasks.put(task.getId(), task);
@@ -115,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if (!epics.containsKey(epic.getId())){
+        if (!epics.containsKey(epic.getId())) {
             return;
         }
         Epic updatedEpic = epics.get(epic.getId());
@@ -126,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        if (!subTasks.containsKey(subTask.getId())){
+        if (!subTasks.containsKey(subTask.getId())) {
             return;
         }
         Epic epic = epics.get(subTask.getEpicId());
@@ -139,6 +153,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeTaskById(int id) {
+        historyManager.remove(id);
         tasks.remove(id);
     }
 
@@ -147,7 +162,9 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(id);
         for (int subTaskId : epic.getSubTaskIds()) {
             subTasks.remove(subTaskId);
+            historyManager.remove(subTaskId);
         }
+        historyManager.remove(id);
         epics.remove(id);
     }
 
@@ -155,6 +172,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeSubTaskById(int id) {
         Epic epic = epics.get(subTasks.get(id).getEpicId());
         epic.removeSubTaskById(id);
+        historyManager.remove(id);
         subTasks.remove(id);
         calculateEpicStatus(epic);
     }
@@ -162,7 +180,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getEpicSubTasks(Epic epic) {
         List<SubTask> subTaskList = new ArrayList<>();
-        for (int id : epic.getSubTaskIds()){
+        for (int id : epic.getSubTaskIds()) {
             subTaskList.add(subTasks.get(id));
         }
         return subTaskList;
@@ -174,7 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
         boolean allDone = true;
 
         for (Integer subTaskId : epic.getSubTaskIds()) {
-            SubTask subTask = getSubTaskById(subTaskId);
+            SubTask subTask = subTasks.get(subTaskId);
             switch (subTask.getStatus()) {
                 case IN_PROGRESS:
                     allNew = false;
@@ -193,7 +211,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        if (allNew || subTasks.isEmpty()) {
+        if (allNew || epic.getSubTaskIds().isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
         } else if (allDone) {
             epic.setStatus(TaskStatus.DONE);
