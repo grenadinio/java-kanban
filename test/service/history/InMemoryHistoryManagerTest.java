@@ -1,9 +1,10 @@
-package service;
+package service.history;
 
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import util.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,7 +14,7 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void init() {
-        historyManager = Managers.getDefaultHistory();
+        historyManager = new InMemoryHistoryManager();
     }
 
     @Test
@@ -30,8 +31,8 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    @DisplayName("должен удалять")
-    void should() {
+    @DisplayName("должен удалять указанные элементы истории")
+    void shouldDeleteHistoryElements() {
         for (int i = 0; i <= 14; i++) {
             historyManager.add(new Task(i, "Task " + i, TaskStatus.NEW, "Task " + i));
         }

@@ -2,6 +2,10 @@ package service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import service.history.HistoryManager;
+import service.history.InMemoryHistoryManager;
+import service.task.FileBackedTaskManager;
+import service.task.TaskManager;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,8 +19,8 @@ class ManagersTest {
         TaskManager taskManager = Managers.getDefault();
 
         assertNotNull(taskManager, "Менеджер задач не инициализировался");
-        assertInstanceOf(InMemoryTaskManager.class, taskManager,
-                "Менеджер задач не является экземпляром InMemoryTaskManager");
+        assertInstanceOf(FileBackedTaskManager.class, taskManager,
+                "Менеджер задач не является экземпляром FileBackedTaskManager");
     }
 
     @Test
