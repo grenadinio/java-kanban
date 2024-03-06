@@ -1,6 +1,7 @@
 package model;
 
-import service.TaskStatus;
+import util.TaskStatus;
+import util.TaskType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class Epic extends Task {
         subTaskIds.remove(id);
     }
 
+    public TaskType getType() {
+        return TaskType.EPIC;
+    }
 
     @Override
     public String toString() {
