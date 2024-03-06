@@ -1,4 +1,4 @@
-package service;
+package util;
 
 public enum TaskStatus {
     NEW("Новый"),
