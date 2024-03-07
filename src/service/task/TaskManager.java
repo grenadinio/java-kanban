@@ -1,8 +1,9 @@
-package service;
+package service.task;
 
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import service.history.HistoryManager;
 
 import java.util.List;
 
@@ -46,6 +47,8 @@ public interface TaskManager {
     List<SubTask> getEpicSubTasks(Epic epic);
 
     void calculateEpicStatus(Epic epic);
+
+    HistoryManager getHistoryManager();
 
     List<Task> getHistory();
 }

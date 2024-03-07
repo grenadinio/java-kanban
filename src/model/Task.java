@@ -1,6 +1,7 @@
 package model;
 
-import service.TaskStatus;
+import util.TaskStatus;
+import util.TaskType;
 
 public class Task {
     private int id;
@@ -51,6 +52,14 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getEpicId() {
+        return null;
+    }
+
+    public TaskType getType() {
+        return TaskType.TASK;
     }
 
     @Override

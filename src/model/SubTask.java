@@ -1,6 +1,7 @@
 package model;
 
-import service.TaskStatus;
+import util.TaskStatus;
+import util.TaskType;
 
 public class SubTask extends Task {
     private Integer epicId;
@@ -21,6 +22,10 @@ public class SubTask extends Task {
 
     public void setEpicId(Integer epicId) {
         this.epicId = epicId;
+    }
+
+    public TaskType getType() {
+        return TaskType.SUBTASK;
     }
 
     @Override

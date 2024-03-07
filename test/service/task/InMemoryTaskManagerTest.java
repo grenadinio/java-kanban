@@ -1,4 +1,4 @@
-package service;
+package service.task;
 
 import model.Epic;
 import model.SubTask;
@@ -6,19 +6,20 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import util.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Менеджер задач")
+@DisplayName("Менеджер задач (память)")
 class InMemoryTaskManagerTest {
     static TaskManager taskManager;
 
     @BeforeEach
     void init() {
-        taskManager = Managers.getDefault();
+        taskManager = new InMemoryTaskManager();
     }
 
     @Test

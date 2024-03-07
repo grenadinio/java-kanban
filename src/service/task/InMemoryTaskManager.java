@@ -1,8 +1,11 @@
-package service;
+package service.task;
 
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import service.Managers;
+import service.history.HistoryManager;
+import util.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +17,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, SubTask> subTasks;
     private final HistoryManager historyManager;
 
-    int seq = 0;
+    private int seq = 0;
 
     private int generateId() {
         return seq++;
@@ -25,6 +28,10 @@ public class InMemoryTaskManager implements TaskManager {
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
+    }
+
+    public void setSeq(int maxId) {
+        seq = maxId + 1;
     }
 
     @Override
@@ -219,6 +226,30 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
 
+    }
+
+    protected void restoreTask(Task task) {
+        tasks.put(task.getId(), task);
+    }
+
+    protected void restoreEpic(Epic epic) {
+        epics.put(epic.getId(), epic);
+    }
+
+    protected void restoreSubTask(SubTask subTask) {
+        if (!epics.containsKey(subTask.getEpicId())) {
+            return;
+        }
+
+        subTasks.put(subTask.getId(), subTask);
+        Epic epic = epics.get(subTask.getEpicId());
+        epic.addSubTaskById(subTask.getId());
+        calculateEpicStatus(epic);
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return historyManager;
     }
 
     @Override
