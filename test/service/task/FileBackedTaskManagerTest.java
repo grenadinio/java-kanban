@@ -24,18 +24,6 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    @DisplayName("должен сохранить пустой файл")
-    public void shouldSaveEmptyFile() {
-        try {
-            taskManager.save();
-            assertTrue(file.exists(), "Файл не существует");
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Не удалось сохранить файл. Ошибка: " + e);
-        }
-    }
-
-    @Test
     @DisplayName("должен загрузить пустой файл")
     public void shouldLoadEmptyFile() {
         try {
