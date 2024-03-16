@@ -6,6 +6,7 @@ import model.Task;
 import service.history.HistoryManager;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
     List<Task> getTasks();
@@ -48,7 +49,11 @@ public interface TaskManager {
 
     void calculateEpicStatus(Epic epic);
 
+    void calculateEpicTimes(Epic epic);
+
     HistoryManager getHistoryManager();
 
     List<Task> getHistory();
+
+    TreeSet<Task> getPrioritizedTasks();
 }
