@@ -41,7 +41,7 @@ class FileBackedTaskManagerTest {
         taskManager.createTask(new Task("Новая задача", "Описание первой задачи."));
         BufferedReader br = new BufferedReader(new FileReader(file));
         br.readLine();
-        assertEquals("0,TASK,Новая задача,NEW,Описание первой задачи.,null", br.readLine(),
+        assertEquals("0,TASK,Новая задача,NEW,Описание первой задачи.,null,null,0", br.readLine(),
                 "Строка не соответствует ожидаемой");
     }
 
@@ -56,13 +56,13 @@ class FileBackedTaskManagerTest {
         BufferedReader br = new BufferedReader(new FileReader(file));
         assertEquals("id,type,name,status,description,epicId", br.readLine(),
                 "Строка 0 не соответствует ожидаемой");
-        assertEquals("0,TASK,Новая задача 1,NEW,Описание 1 задачи.,null", br.readLine(),
+        assertEquals("0,TASK,Новая задача 1,NEW,Описание 1 задачи.,null,null,0", br.readLine(),
                 "Строка 1 не соответствует ожидаемой");
-        assertEquals("1,TASK,Новая задача 2,NEW,Описание 2 задачи.,null", br.readLine(),
+        assertEquals("1,TASK,Новая задача 2,NEW,Описание 2 задачи.,null,null,0", br.readLine(),
                 "Строка 2 не соответствует ожидаемой");
-        assertEquals("2,TASK,Новая задача 3,NEW,Описание 3 задачи.,null", br.readLine(),
+        assertEquals("2,TASK,Новая задача 3,NEW,Описание 3 задачи.,null,null,0", br.readLine(),
                 "Строка 3 не соответствует ожидаемой");
-        assertEquals("3,TASK,Новая задача 4,NEW,Описание 4 задачи.,null", br.readLine(),
+        assertEquals("3,TASK,Новая задача 4,NEW,Описание 4 задачи.,null,null,0", br.readLine(),
                 "Строка 4 не соответствует ожидаемой");
         assertNull(br.readLine(), "Строка 5 не соответствует ожидаемой");
     }
