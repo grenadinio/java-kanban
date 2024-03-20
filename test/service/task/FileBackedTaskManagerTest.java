@@ -143,7 +143,7 @@ class FileBackedTaskManagerTest {
         taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
         taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
 
-        Epic epic2 = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        taskManager.createEpic(new Epic("Test epic", "Test description"));
         Epic epic3 = taskManager.createEpic(new Epic("Test epic", "Test description"));
         taskManager.createSubTask(new SubTask(epic3.getId(), "Подзадача", "Описание"));
 

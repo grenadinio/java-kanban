@@ -324,10 +324,10 @@ class InMemoryTaskManagerTest {
         LocalDateTime basicLDT = LocalDateTime.of(2024, 1, 1, 11, 11);
         assertThrows(ValidationException.class, () -> {
             Task task1 = taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
-            Task task2 = taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
-            Task task3 = taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
+            taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
+            taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
             Task task4 = taskManager.createTask(new Task("Задача4", "Описание", basicLDT.minusMinutes(100), 100L));
-            Task task5 = taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
+            taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
 
             assertEquals(3, taskManager.getTasks().size(), "Неверное количество созданных задач");
             assertEquals(task1, taskManager.getTasks().getFirst(), "Неверное название первой задачи в списке");
@@ -372,11 +372,11 @@ class InMemoryTaskManagerTest {
     void shouldReturnTasksByStartTime() {
         LocalDateTime basicLDT = LocalDateTime.of(2024, 1, 1, 11, 11);
         assertThrows(ValidationException.class, () -> {
-            Task task1 = taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
-            Task task2 = taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
+            taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
+            taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
             Task task3 = taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
             Task task4 = taskManager.createTask(new Task("Задача4", "Описание", basicLDT.minusMinutes(100), 100L));
-            Task task5 = taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
+            taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
 
             TreeSet<Task> tasks = taskManager.getPrioritizedTasks();
 
