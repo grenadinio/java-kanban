@@ -1,5 +1,7 @@
 package service.task;
 
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
@@ -110,11 +112,12 @@ class InMemoryTaskManagerTest {
         Epic epic = taskManager.createEpic(new Epic("Test epic", "Test description"));
         SubTask subTask = taskManager
                 .createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
+        assertThrows(NotFoundException.class, () -> {
+            SubTask subTask1 = taskManager
+                    .createSubTask(new SubTask(subTask.getId(), "Подзадача", "Описание"));
 
-        SubTask subTask1 = taskManager
-                .createSubTask(new SubTask(subTask.getId(), "Подзадача", "Описание"));
-
-        assertNull(subTask1, "Создалась подзадача у которой эпик - это подзадача");
+            assertNull(subTask1, "Создалась подзадача у которой эпик - это подзадача");
+        }, "Создание подзадачи с неверно указанным EpicId должно приводить к исключению");
     }
 
     @Test
@@ -319,15 +322,17 @@ class InMemoryTaskManagerTest {
     @DisplayName("не должен создавать задачи если их время работы пересекается с существующими")
     void shouldNotCreateTaskIfItHasIntersections() {
         LocalDateTime basicLDT = LocalDateTime.of(2024, 1, 1, 11, 11);
-        Task task1 = taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
-        Task task2 = taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
-        Task task3 = taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
-        Task task4 = taskManager.createTask(new Task("Задача4", "Описание", basicLDT.minusMinutes(100), 100L));
-        Task task5 = taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
+        assertThrows(ValidationException.class, () -> {
+            Task task1 = taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
+            Task task2 = taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
+            Task task3 = taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
+            Task task4 = taskManager.createTask(new Task("Задача4", "Описание", basicLDT.minusMinutes(100), 100L));
+            Task task5 = taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
 
-        assertEquals(3, taskManager.getTasks().size(), "Неверное количество созданных задач");
-        assertEquals(task1, taskManager.getTasks().getFirst(), "Неверное название первой задачи в списке");
-        assertEquals(task4, taskManager.getTasks().getLast(), "Неверное название последней задачи в списке");
+            assertEquals(3, taskManager.getTasks().size(), "Неверное количество созданных задач");
+            assertEquals(task1, taskManager.getTasks().getFirst(), "Неверное название первой задачи в списке");
+            assertEquals(task4, taskManager.getTasks().getLast(), "Неверное название последней задачи в списке");
+        }, "Создание задачи с пересечением должно приводить к исключению");
     }
 
     @Test
@@ -366,16 +371,18 @@ class InMemoryTaskManagerTest {
     @DisplayName("должен вернуть список задач отсортированный по началу исполнения")
     void shouldReturnTasksByStartTime() {
         LocalDateTime basicLDT = LocalDateTime.of(2024, 1, 1, 11, 11);
-        Task task1 = taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
-        Task task2 = taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
-        Task task3 = taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
-        Task task4 = taskManager.createTask(new Task("Задача4", "Описание", basicLDT.minusMinutes(100), 100L));
-        Task task5 = taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
+        assertThrows(ValidationException.class, () -> {
+            Task task1 = taskManager.createTask(new Task("Задача1", "Описание", basicLDT, 100L));
+            Task task2 = taskManager.createTask(new Task("Задача2", "Описание", basicLDT, 100L));
+            Task task3 = taskManager.createTask(new Task("Задача3", "Описание", basicLDT.plusMinutes(100), 100L));
+            Task task4 = taskManager.createTask(new Task("Задача4", "Описание", basicLDT.minusMinutes(100), 100L));
+            Task task5 = taskManager.createTask(new Task("Задача5", "Описание", basicLDT.minusMinutes(99), 100L));
 
-        TreeSet<Task> tasks = taskManager.getPrioritizedTasks();
+            TreeSet<Task> tasks = taskManager.getPrioritizedTasks();
 
-        assertEquals(3, tasks.size(), "Неверная длина списка");
-        assertEquals(task4, tasks.getFirst(), "Неверный первый элемент списка");
-        assertEquals(task3, tasks.getLast(), "Неверный последний элемент списка");
+            assertEquals(3, tasks.size(), "Неверная длина списка");
+            assertEquals(task4, tasks.getFirst(), "Неверный первый элемент списка");
+            assertEquals(task3, tasks.getLast(), "Неверный последний элемент списка");
+        }, "Создание задачи с пересечением должно приводить к исключению");
     }
 }
