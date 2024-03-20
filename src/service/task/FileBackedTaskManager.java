@@ -146,8 +146,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         TaskStatus status = TaskStatus.valueOf(columns[3]);
         String description = columns[4];
         int epicId = -1;
-        if (type == TaskType.SUBTASK)
+        if (type == TaskType.SUBTASK) {
             epicId = Integer.parseInt(columns[5]);
+        }
 
         LocalDateTime startTime = Objects.equals(columns[6], "null") ? null : LocalDateTime.parse(columns[6]);
         Long duration = Objects.equals(columns[7], "null") ? null : Long.parseLong(columns[7]);
