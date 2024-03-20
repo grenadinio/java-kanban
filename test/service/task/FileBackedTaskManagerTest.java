@@ -1,5 +1,7 @@
 package service.task;
 
+import model.Epic;
+import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -123,6 +125,33 @@ class FileBackedTaskManagerTest {
         try {
             FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
             assertEquals(3, loadedManager.getHistory().size(), "Длина истории несоответствует");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Не удалось загрузить файл. Ошибка: " + e);
+        }
+    }
+
+    @Test
+    @DisplayName("должен восстановить все задачи,эпики, подзадачи из файла")
+    void shouldRestoreAllTaskTypesFromFile() {
+        taskManager.createTask(new Task("Новая задача 1", "Описание 1 задачи."));
+        taskManager.createTask(new Task("Новая задача 2", "Описание 2 задачи."));
+        taskManager.createTask(new Task("Новая задача 3", "Описание 3 задачи."));
+        taskManager.createTask(new Task("Новая задача 4", "Описание 4 задачи."));
+
+        Epic epic = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
+        taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
+
+        Epic epic2 = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        Epic epic3 = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        taskManager.createSubTask(new SubTask(epic3.getId(), "Подзадача", "Описание"));
+
+        try {
+            FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+            assertEquals(4, loadedManager.getTasks().size(), "Количество задач несоответствует");
+            assertEquals(3, loadedManager.getEpics().size(), "Количество эпиков несоответствует");
+            assertEquals(3, loadedManager.getSubTasks().size(), "Количество подзадач несоответствует");
         } catch (Exception e) {
             e.printStackTrace();
             fail("Не удалось загрузить файл. Ошибка: " + e);

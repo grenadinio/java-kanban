@@ -216,7 +216,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private void save() {
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.append("id,type,name,status,description,epicId");
-            Stream.of(super.getTasks(), super.getSubTasks(), super.getEpics())
+            Stream.of(super.getTasks(), super.getEpics(), super.getSubTasks())
                     .flatMap(Collection::stream)
                     .forEach(task -> {
                         try {
