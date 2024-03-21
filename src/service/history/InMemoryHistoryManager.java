@@ -2,9 +2,11 @@ package service.history;
 
 import model.Task;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final HashMap<Integer, Node> taskHistory;
@@ -32,13 +34,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        ArrayList<Task> list = new ArrayList<>();
-        Node current = first;
-        while (current != null) {
-            list.add(current.element);
-            current = current.next;
-        }
-        return list;
+        return Stream.iterate(first, Objects::nonNull, current -> current.next)
+                .map(node -> node.element)
+                .collect(Collectors.toList());
     }
 
     void linkLast(Task task) {

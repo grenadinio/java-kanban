@@ -3,19 +3,21 @@ package model;
 import util.TaskStatus;
 import util.TaskType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
     private final List<Integer> subTaskIds;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
-        subTaskIds = new ArrayList<>();
+        this.subTaskIds = new ArrayList<>();
     }
 
-    public Epic(int id, String name, TaskStatus status, String description, List<Integer> subTaskIds) {
-        super(id, name, status, description);
+    public Epic(int id, String name, TaskStatus status, String description, List<Integer> subTaskIds, LocalDateTime startTime, Long duration) {
+        super(id, name, status, description, startTime, duration);
         this.subTaskIds = subTaskIds;
     }
 
@@ -36,6 +38,15 @@ public class Epic extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
     public String toString() {
         return "Epic{" +
                 "id=" + getId() +
@@ -43,6 +54,8 @@ public class Epic extends Task {
                 ", status='" + getStatus().getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", subTaskIds=" + subTaskIds +
-                "}";
+                ", duration=" + getDuration() +
+                ", startTime=" + getStartTime() +
+                '}';
     }
 }

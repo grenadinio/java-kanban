@@ -1,5 +1,7 @@
 package service.task;
 
+import model.Epic;
+import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +43,7 @@ class FileBackedTaskManagerTest {
         taskManager.createTask(new Task("Новая задача", "Описание первой задачи."));
         BufferedReader br = new BufferedReader(new FileReader(file));
         br.readLine();
-        assertEquals("0,TASK,Новая задача,NEW,Описание первой задачи.,null", br.readLine(),
+        assertEquals("0,TASK,Новая задача,NEW,Описание первой задачи.,null,null,0", br.readLine(),
                 "Строка не соответствует ожидаемой");
     }
 
@@ -56,13 +58,13 @@ class FileBackedTaskManagerTest {
         BufferedReader br = new BufferedReader(new FileReader(file));
         assertEquals("id,type,name,status,description,epicId", br.readLine(),
                 "Строка 0 не соответствует ожидаемой");
-        assertEquals("0,TASK,Новая задача 1,NEW,Описание 1 задачи.,null", br.readLine(),
+        assertEquals("0,TASK,Новая задача 1,NEW,Описание 1 задачи.,null,null,0", br.readLine(),
                 "Строка 1 не соответствует ожидаемой");
-        assertEquals("1,TASK,Новая задача 2,NEW,Описание 2 задачи.,null", br.readLine(),
+        assertEquals("1,TASK,Новая задача 2,NEW,Описание 2 задачи.,null,null,0", br.readLine(),
                 "Строка 2 не соответствует ожидаемой");
-        assertEquals("2,TASK,Новая задача 3,NEW,Описание 3 задачи.,null", br.readLine(),
+        assertEquals("2,TASK,Новая задача 3,NEW,Описание 3 задачи.,null,null,0", br.readLine(),
                 "Строка 3 не соответствует ожидаемой");
-        assertEquals("3,TASK,Новая задача 4,NEW,Описание 4 задачи.,null", br.readLine(),
+        assertEquals("3,TASK,Новая задача 4,NEW,Описание 4 задачи.,null,null,0", br.readLine(),
                 "Строка 4 не соответствует ожидаемой");
         assertNull(br.readLine(), "Строка 5 не соответствует ожидаемой");
     }
@@ -123,6 +125,33 @@ class FileBackedTaskManagerTest {
         try {
             FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
             assertEquals(3, loadedManager.getHistory().size(), "Длина истории несоответствует");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Не удалось загрузить файл. Ошибка: " + e);
+        }
+    }
+
+    @Test
+    @DisplayName("должен восстановить все задачи,эпики, подзадачи из файла")
+    void shouldRestoreAllTaskTypesFromFile() {
+        taskManager.createTask(new Task("Новая задача 1", "Описание 1 задачи."));
+        taskManager.createTask(new Task("Новая задача 2", "Описание 2 задачи."));
+        taskManager.createTask(new Task("Новая задача 3", "Описание 3 задачи."));
+        taskManager.createTask(new Task("Новая задача 4", "Описание 4 задачи."));
+
+        Epic epic = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
+        taskManager.createSubTask(new SubTask(epic.getId(), "Подзадача", "Описание"));
+
+        taskManager.createEpic(new Epic("Test epic", "Test description"));
+        Epic epic3 = taskManager.createEpic(new Epic("Test epic", "Test description"));
+        taskManager.createSubTask(new SubTask(epic3.getId(), "Подзадача", "Описание"));
+
+        try {
+            FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(file);
+            assertEquals(4, loadedManager.getTasks().size(), "Количество задач несоответствует");
+            assertEquals(3, loadedManager.getEpics().size(), "Количество эпиков несоответствует");
+            assertEquals(3, loadedManager.getSubTasks().size(), "Количество подзадач несоответствует");
         } catch (Exception e) {
             e.printStackTrace();
             fail("Не удалось загрузить файл. Ошибка: " + e);
